@@ -15,29 +15,25 @@ public class WeatherPatterns {
      * @return the longest run of days with increasing temperatures
      */
     public static int longestWarmingTrend(int[] temperatures) {
-
+        if (temperatures.length == 0){
+            return 0;
+        }
         int counter[] = new int[temperatures.length];
         counter[0] = 1;
-        int longestCount;
-        if (temperatures.length == 1){
-            return 1;
-        }
-        // Count and keep each day with their corresponding count pointing to its day
-        int j = 1;
-        for (int i = 1; i < temperatures.length; i++) {
-            int current = temperatures[i];
-            if (current > temperatures[j-1]) {
-                counter[i] = counter[i-1] + 1;
-                // 73 75 74 76 77 79 78
-                // 01 02 02 03 04 05 05
-                j++;
-            }
-            else if (current < temperatures[i-1]) {
-                counter[i] = counter[i-1];
+        int longestCount = 1;
 
+        // Count and keep each day with their corresponding count pointing to its day
+        for (int i = 1; i < temperatures.length; i++) {
+            counter[i] = 1;
+            for (int j = 0; j < i; j++) {
+                if (temperatures[i] > temperatures[j] && counter[i] < counter[j] + 1) {
+                    // If longer one found update count
+                    counter[i] = counter[j] + 1;
+                 }
             }
+            // Update the winning longest count as we go
+            longestCount = Math.max(longestCount, counter[i]);
         }
-        longestCount = temperatures.length - 1;
-        return counter[longestCount];
+        return longestCount;
     }
 }
