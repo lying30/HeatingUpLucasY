@@ -7,33 +7,50 @@
  */
 
 public class WeatherPatterns {
-
-
     /**
      * Longest Warming Trend
+     *
      * @param temperatures
      * @return the longest run of days with increasing temperatures
      */
     public static int longestWarmingTrend(int[] temperatures) {
-        if (temperatures.length == 0){
+        // Handles edge case when there are no temperatures
+        if (temperatures.length == 0) {
             return 0;
         }
-        int counter[] = new int[temperatures.length];
-        counter[0] = 1;
+
+        // This array storing longest increasing sequence
+        int[] counter = new int[temperatures.length];
         int longestCount = 1;
 
-        // Count and keep each day with their corresponding count pointing to its day
-        for (int i = 1; i < temperatures.length; i++) {
-            counter[i] = 1;
-            for (int j = 0; j < i; j++) {
-                if (temperatures[i] > temperatures[j] && counter[i] < counter[j] + 1) {
-                    // If longer one found update count
-                    counter[i] = counter[j] + 1;
-                 }
-            }
+        // Initialize the computation for each day. The loop starts from each
+        // temperature and uses the helper function to calculate and memoize the
+        // length of the longest sequence starting from that index.
+        for (int i = 0; i < temperatures.length; i++) {
             // Update the winning longest count as we go
-            longestCount = Math.max(longestCount, counter[i]);
+            longestCount = Math.max(longestCount, findLongestFrom(i, temperatures, counter));
         }
+        // Returns longest sequence
         return longestCount;
     }
+
+    private static int findLongestFrom(int current, int[] temperatures, int[] info) {
+        // Return the already computed result if available
+        if (info[current] != 0){
+            return info[current];
+        }
+
+        // Initialize the longest sequence length with 1 as the minimum length
+        int maxLength = 1;
+
+        // Recursively check all subsequent elements to see if a longer subsequence can be formed.
+        for (int next = current + 1; next < temperatures.length; next++) {
+            if (temperatures[next] > temperatures[current]) {
+                maxLength = Math.max(maxLength,1 + findLongestFrom(next, temperatures, info));
+            }
+        }
+        info[current] = maxLength;
+        return maxLength;
+    }
 }
+
